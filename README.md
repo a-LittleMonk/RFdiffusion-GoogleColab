@@ -58,6 +58,7 @@ name a different folder.
 
 | Field | What it does |
 |---|---|
+| `run_mode` | `Production`, `Fast debug`, or `Smoke test` — see below |
 | `name` | Output prefix for the files |
 | `design_type` | `monomer`, `binder`, `motif scaffolding`, or `partial diffusion` |
 | `contigs` | What to build — see below |
@@ -65,6 +66,22 @@ name a different folder.
 | `hotspots` | Residues the binder should engage, e.g. `A59,A83,A91` |
 | `iterations` | Diffusion steps, 50 is a sensible start |
 | `num_designs` | How many to generate |
+
+### Run modes
+
+| Mode | What it does | Use it when |
+|---|---|---|
+| `Production` | Runs exactly what the fields say | Real designs |
+| `Fast debug` | Keeps your target, contigs and hotspots; forces 5 diffusion steps, 1 design, no trajectory files | Checking a new contig string or target before paying for a full run |
+| `Smoke test` | Ignores every field; diffuses a 20-residue monomer | Deciding whether a failure is your settings or the install |
+
+Both debug modes print a banner and the backbones they produce are noise — five
+diffusion steps is nowhere near enough to fold anything. They exist to answer
+"does this run at all", not "is this design good".
+
+`Smoke test` is the one to reach for when a run fails and the traceback is
+unhelpful. It touches nothing but the environment, the weights and the output
+path, so if it passes the install is sound and the fault is in your settings.
 
 ### Contigs
 
