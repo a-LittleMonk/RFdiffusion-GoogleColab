@@ -12,24 +12,25 @@ inference through it as a subprocess, leaving Colab's own Python alone.
 
 ## Running it
 
-Set the runtime to a GPU, then run cells 1–8 in order.
+Set the runtime to a GPU, then run cells 1–9 in order.
 
 | Cell | | Time |
 |---|---|---|
 | 1 | Check the GPU | — |
-| 2 | Install Python 3.10 | ~1 min |
-| 3 | Build the environment | ~6 min, ~3 GB |
-| 4 | Download RFdiffusion and model weights | ~1 GB |
-| 5 | Compile SE3Transformer | ~3 min |
-| 6 | Generate designs | depends |
-| 7 | View a design | — |
-| 8 | Save results to Drive | — |
+| 2 | Mount your Google Drive | — |
+| 3 | Install Python 3.10 | ~1 min |
+| 4 | Build the environment | ~6 min, ~3 GB |
+| 5 | Download RFdiffusion and model weights | ~1 GB |
+| 6 | Compile SE3Transformer | ~3 min |
+| 7 | Generate designs | depends |
+| 8 | View a design | — |
+| 9 | Save results to Drive | — |
 
-**Stop and read cell 3's output before continuing.** It should show
+**Stop and read cell 4's output before continuing.** It should show
 `numpy: 1.26.4`, `dgl: 1.1.x`, and `torch<->numpy: 1.0`. If numpy has been
 pulled up to 2.x, something later installed over it and DGL will crash.
 
-**Run cell 8 before closing the tab.** Colab deletes `/content` when the runtime
+**Run cell 9 before closing the tab.** Colab deletes `/content` when the runtime
 ends, and the designs live there until you copy them to Drive.
 
 The first design run is a few minutes slower than later ones. RFdiffusion
@@ -39,14 +40,28 @@ but that file was removed from the server and now 404s — the download fails
 silently and you would never notice except for the extra minutes. That step is
 removed here deliberately; don't add it back.
 
-## Setting up a run (cell 6)
+## Working from your Google Drive (cell 2)
+
+Cell 2 mounts your Drive and creates `My Drive/RFdiffusion/inputs` and
+`My Drive/RFdiffusion/outputs`. Put any target structure you want to design
+against into the `inputs` folder — the cell lists what it finds there, so you
+can copy a name straight into `input_pdb`.
+
+Nothing else depends on it. Skip cell 2 and the notebook still works with
+uploaded files and PDB codes; the design cell only looks in Drive when the name
+you gave is not already a file on disk.
+
+Cell 9 writes the designs back to `My Drive/RFdiffusion/outputs` unless you
+name a different folder.
+
+## Setting up a run (cell 7)
 
 | Field | What it does |
 |---|---|
 | `name` | Output prefix for the files |
 | `design_type` | `monomer`, `binder`, `motif scaffolding`, or `partial diffusion` |
 | `contigs` | What to build — see below |
-| `input_pdb` | Target structure. A 4-letter PDB code like `1D8R` is fetched automatically, or give the path of a file you uploaded. Blank for a monomer. |
+| `input_pdb` | Target structure. Tried in this order: a file in your Drive `inputs` folder (`tgfb1_dimer.pdb`), a full path, or a 4-letter PDB code like `1D8R`, which is downloaded. Blank for a monomer. |
 | `hotspots` | Residues the binder should engage, e.g. `A59,A83,A91` |
 | `iterations` | Diffusion steps, 50 is a sensible start |
 | `num_designs` | How many to generate |
@@ -71,13 +86,14 @@ wherever it likes on the target, which is rarely the site you care about.
 
 ## Worked example — a binder to TGF-β1
 
-Upload the TGF-β1 dimer PDB (3KFD) to `/content`, then:
+Put the TGF-β1 dimer PDB (3KFD) in `My Drive/RFdiffusion/inputs`, run cell 2,
+then:
 
 ```
 name        = tgfb1_binder
 design_type = binder
 contigs     = A1-112/0 B1-112/0 70-100
-input_pdb   = /content/tgfb1_dimer_3kfd.pdb
+input_pdb   = tgfb1_dimer_3kfd.pdb
 hotspots    = A31,A34,A91,A94
 ```
 
