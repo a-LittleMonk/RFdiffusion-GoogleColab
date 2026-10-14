@@ -1,5 +1,16 @@
 # RFdiffusion on Colab
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/a-LittleMonk/RFdiffusion-GoogleColab/blob/main/RFdiffusion_colab.ipynb)
+
+**The repo is private, so this needs a one-time authorisation.** In Colab:
+*File > Open notebook > GitHub*, tick **Include private repos**, and authorise.
+After that the badge above opens the notebook directly, and so does pasting the
+repo URL into that same GitHub tab. Without it, Colab reports the notebook as not
+found — the link is fine, it just cannot see a private repo yet.
+
+Colab opens it read-only from GitHub. *File > Save a copy in Drive* to get an
+editable copy; your form settings live in that copy, not here.
+
 A Colab notebook that runs RFdiffusion on current Colab. Clean template — no
 outputs, no run history, parameters at their defaults.
 
