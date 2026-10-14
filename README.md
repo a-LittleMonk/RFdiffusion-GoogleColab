@@ -79,7 +79,7 @@ name a different folder.
 
 | Field | What it does |
 |---|---|
-| `run_mode` | `Production`, `Fast debug`, or `Smoke test` — see below |
+| `run_mode` | `Production`, `Export check`, `Fast debug`, or `Smoke test` — see below |
 | `name` | Output prefix for the files |
 | `design_type` | `monomer`, `binder`, `motif scaffolding`, or `partial diffusion` |
 | `contigs` | What to build — see below |
@@ -90,19 +90,41 @@ name a different folder.
 
 ### Run modes
 
-| Mode | What it does | Use it when |
-|---|---|---|
-| `Production` | Runs exactly what the fields say | Real designs |
-| `Fast debug` | Keeps your target, contigs and hotspots; forces 5 diffusion steps, 1 design, no trajectory files | Checking a new contig string or target before paying for a full run |
-| `Smoke test` | Ignores every field; diffuses a 20-residue monomer | Deciding whether a failure is your settings or the install |
+| Mode | What it does | Time | Use it when |
+|---|---|---|---|
+| `Production` | Runs exactly what the fields say | hours | Real designs |
+| `Export check` | Shrinks every contig segment to ~12 residues, 2 steps, then verifies the PDB and copies it to Drive | ~1 min | "Will I actually get a file out of this?" |
+| `Fast debug` | Keeps your contigs and hotspots at full size; 5 steps, 1 design | a few min | Validating the real contig string and hotspots |
+| `Smoke test` | Ignores every field; 20-residue monomer | <1 min | Is the install broken, or my settings? |
 
-Both debug modes print a banner and the backbones they produce are noise — five
-diffusion steps is nowhere near enough to fold anything. They exist to answer
-"does this run at all", not "is this design good".
+None of the three debug modes produce usable designs — 2–5 diffusion steps
+cannot fold anything. They answer "does this run at all", never "is this design
+good", and each prints a banner saying so.
 
-`Smoke test` is the one to reach for when a run fails and the traceback is
-unhelpful. It touches nothing but the environment, the weights and the output
-path, so if it passes the install is sound and the fault is in your settings.
+**Why `Export check` is the fast one.** Runtime is dominated by residue count,
+not step count: attention is quadratic in the number of residues, so a 250-residue
+complex costs far more per step than a 25-residue one. `Fast debug` cuts the steps
+10x but keeps the size, so a 3-hour run still takes minutes. `Export check` cuts
+both, which is what gets it to about a minute.
+
+It keeps the *shape* of your contig while shrinking it: target slices keep their
+start residue and take the first 12 (so the numbering stays valid against your
+real PDB), designed ranges collapse to a fixed 12, and chain breaks are untouched.
+It prints the before and after so you can see what it ran. Two things to know:
+
+- **Hotspots are dropped.** Shrinking the target moves those residues out of
+  range. Use `Fast debug` to validate hotspots.
+- **A bare chain id (`A`) cannot be shrunk**, since it means "the whole chain"
+  and there is no way to know where it ends without guessing. The banner says so,
+  and the check will take longer than a minute.
+
+Output goes to `<name>_exportcheck_*`, so your real results are never touched,
+and the check reads the PDB back and reports its atom and residue count before
+copying it to Drive. If all of that passes, the only thing left untested is
+whether the designs are any good.
+
+Every run now prints its elapsed time, and a production run of more than one
+design also prints the per-design average — useful for sizing a batch.
 
 ### Contigs
 
