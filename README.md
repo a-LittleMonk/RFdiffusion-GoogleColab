@@ -26,14 +26,35 @@ Set the runtime to a GPU, then run cells 1–9 in order.
 | 8 | View a design | — |
 | 9 | Save results to Drive | — |
 
-**Stop and read cell 4's output before continuing.** It should show
-`numpy: 1.26.4`, `dgl: 1.1.x`, and `torch<->numpy: 1.0`. If numpy has been
-pulled up to 2.x, something later installed over it and DGL will crash.
+Cell 4 now checks itself and raises if NumPy got pulled up to 2.x, if the CUDA
+11 libraries are missing, if DGL is the wrong version, or if torch cannot see the
+GPU. Cell 6 raises if RFdiffusion still does not import or a weights file is
+truncated. Both failures are terminal — see *If something fails* below, and do
+not re-run the cell in place.
+
+## Run all
+
+Two things need you; everything else, including saving back to Drive, is
+unattended.
+
+1. **Cell 2 waits for a Google Drive authorisation popup.** Run all will sit
+   there until you click through it.
+2. **Cell 7's fields must already say what you want built.** Its defaults make a
+   100-residue monomer and ignore whatever is in Drive — a file sitting in the
+   inputs folder is not picked up on its own, you have to put its name in
+   `input_pdb`.
+
+Set those up and the rest runs through. Because the setup cells raise on a bad
+environment, a Run all stops at the real cause rather than cascading into
+misleading errors further down, and cell 7 refuses to start at all unless cell 6
+finished.
+
+The first design run is also a few minutes slower than later ones — see below.
 
 **Run cell 9 before closing the tab.** Colab deletes `/content` when the runtime
 ends, and the designs live there until you copy them to Drive.
 
-The first design run is a few minutes slower than later ones. RFdiffusion
+**The first design run is a few minutes slower than later ones.** RFdiffusion
 computes its IGSO3 noise schedule on first use and caches it. The upstream
 notebooks download a prebuilt cache from `files.ipd.uw.edu/krypton/schedules.zip`,
 but that file was removed from the server and now 404s — the download fails
