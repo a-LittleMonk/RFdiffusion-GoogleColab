@@ -5,6 +5,10 @@
 A Colab notebook that runs RFdiffusion on current Colab. Clean template — no
 outputs, no run history, parameters at their defaults.
 
+Built on [RFdiffusion](https://github.com/RosettaCommons/RFdiffusion) by the
+Institute for Protein Design — this repo is a personal wrapper around their
+work, not a replacement for it. See [Credit](#credit).
+
 **This repo is the only current version.** Check
 [the releases page](https://github.com/a-LittleMonk/RFdiffusion-GoogleColab/releases)
 for the newest number; the notebook prints its own version in the first cell, so
@@ -172,8 +176,16 @@ hotspots    = A31,A34,A91,A94
 That presents both chains of the dimer as the target and builds a 70–100 residue
 binder against the interface hotspots on chain A.
 
-## Licence
+## Credit
 
-The notebook and README in this repo are MIT licensed (see `LICENSE`). They are
-a wrapper: RFdiffusion, its model weights and SE3Transformer are downloaded at
-install time and stay under their own licences.
+**The science here is not mine.** RFdiffusion and its model weights are the work
+of the Institute for Protein Design at the University of Washington
+([RosettaCommons/RFdiffusion](https://github.com/RosettaCommons/RFdiffusion)).
+This repo is a personal wrapper I put together to get it running on current
+Colab, plus some debugging aids — the Python 3.10 environment, the run modes,
+the Drive handling and the checks that stop a bad setup early.
+
+Nothing is copied or forked here. RFdiffusion, its weights and SE3Transformer
+are downloaded from the original sources when you run the setup cells, and stay
+under their own terms. If you publish anything from this, cite the RFdiffusion
+authors, not this repo.
