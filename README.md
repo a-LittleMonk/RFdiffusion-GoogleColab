@@ -2,15 +2,18 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/a-LittleMonk/RFdiffusion-GoogleColab/blob/main/RFdiffusion_colab.ipynb)
 
-One click, no sign-in: the repo is public, so Colab can read it anonymously.
-
-Colab opens a GitHub notebook **read-only**. Use *File > Save a copy in Drive* to
-get a runnable copy — and note that the form values you then enter (target,
-contigs, hotspots) are saved in that copy, not here, so the repo stays a clean
-template.
-
 A Colab notebook that runs RFdiffusion on current Colab. Clean template — no
 outputs, no run history, parameters at their defaults.
+
+**This repo is the only current version.** Check
+[the releases page](https://github.com/a-LittleMonk/RFdiffusion-GoogleColab/releases)
+for the newest number; the notebook prints its own version in the first cell, so
+any copy can be checked against that page at a glance.
+
+Colab opens a GitHub notebook **read-only**. Use *File > Save a copy in Drive*
+to get a runnable one. That copy is a snapshot — it keeps the form values you
+type into it (target, contigs, hotspots), and it never picks up later fixes.
+Come back here for those, which is also why the repo stays a clean template.
 
 ## Why this exists
 
@@ -168,3 +171,9 @@ hotspots    = A31,A34,A91,A94
 
 That presents both chains of the dimer as the target and builds a 70–100 residue
 binder against the interface hotspots on chain A.
+
+## Licence
+
+The notebook and README in this repo are MIT licensed (see `LICENSE`). They are
+a wrapper: RFdiffusion, its model weights and SE3Transformer are downloaded at
+install time and stay under their own licences.
