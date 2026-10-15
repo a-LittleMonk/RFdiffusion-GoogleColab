@@ -36,7 +36,7 @@ Set the runtime to a GPU, then run cells 1–9 in order.
 | 2 | Mount your Google Drive | — |
 | 3 | Install Python 3.10 | ~1 min |
 | 4 | Build the environment | ~6 min, ~3 GB |
-| 5 | Download RFdiffusion and model weights | ~1 GB |
+| 5 | Download RFdiffusion and model weights | ~1 GB, cached on Drive |
 | 6 | Compile SE3Transformer | ~3 min |
 | 7 | Generate designs | depends |
 | 8 | View a design | — |
@@ -91,6 +91,29 @@ you gave is not already a file on disk.
 Cell 9 writes the designs back to `My Drive/RFdiffusion/outputs` unless you
 name a different folder.
 
+## The model weights, and the server they live on (cell 5)
+
+The two checkpoints come from `files.ipd.uw.edu`, the Institute for Protein
+Design's file server. **It does go down**, and when it does there is nothing to
+fall back on: the official download publishes no checksum — the hash in its URL
+is the MD5 of the words "hello world", not of the file — so no mirror can be
+verified against the real thing, and a PyTorch checkpoint executes code when it
+is loaded. Pointing this notebook at a stranger's copy is not a trade worth
+making.
+
+So cell 5 **keeps a copy in `My Drive/<your folder>/weights`** instead. The
+first run downloads about 0.9 GB with a progress bar; every run after that
+copies from Drive in seconds, and an outage on the UW server cannot strand you.
+Mount Drive in step 2 before running step 5 to get this.
+
+If the server is down and you have no cached copy, cell 5 says so plainly
+rather than failing obscurely, and tells you that dropping the two `.pt` files
+into that folder yourself skips the download entirely.
+
+There is a `weights_mirror` field, left blank on purpose. It exists for the case
+where the server is down and you have a source *you* trust; it is not filled in
+for you, and using it prints a reminder that the file cannot be checked.
+
 ## Setting up a run (cell 7)
 
 | Field | What it does |
@@ -103,6 +126,44 @@ name a different folder.
 | `hotspots` | Residues the binder should engage, e.g. `A59,A83,A91` |
 | `iterations` | Diffusion steps, 50 is a sensible start |
 | `num_designs` | How many to generate |
+
+### The target check
+
+Before anything is launched, cell 7 prints what RFdiffusion is actually going
+to see, and refuses to start if the settings do not match the structure:
+
+```
+====================================================================
+TARGET CHECK  -  tgfb1.pdb
+====================================================================
+design_type: binder
+contigs:     A1-112/0 B1-112/0 70-100
+chain A:  112 residues, numbered 1-112
+       1  ALDTNYCFSS TEKNCCVRQL YIDFRKDLGW KWIHEPKGYH ANFCLGPCPY
+      51  IWSLDTQYSK VLALYNQHNP GASAAPCCVP QALEPLPIVY YVGRKPKVEQ
+     101  LSNMIVRSCK CS
+hotspots:
+   A31     LYS  K
+   A91     TYR  Y
+   4 residues, 1 aromatic (F/Y/W)
+designed:    70-100 residues
+run:         1 design(s), 50 diffusion steps
+====================================================================
+```
+
+It is an error, not a surprise three hours in, if:
+
+- a contig slice names residues the file does not contain — it says how far the
+  chain actually runs
+- a contig names a chain that is not in the file — it lists the ones that are
+- a hotspot does not exist, or is malformed
+- a hotspot sits on a chain the contig never names, so it is not part of the
+  target and would quietly do nothing
+
+Sequence lines are labelled with the **real residue number**, and gaps in the
+numbering are reported, because contigs and hotspots are written in PDB
+numbering — a structure that starts at residue 30 is an easy way to aim at the
+wrong place entirely.
 
 ### Run modes
 
